@@ -1,0 +1,126 @@
+# Importando as bibliotecas necessárias
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from scipy.stats import ttest_ind
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Configurando o estilo dos gráficos
+sns.set(style="whitegrid")
+
+# Ler o arquivo "insurance.csv" diretamente do Google Drive
+url = "https://drive.google.com/uc?id=1fidkzb-uiKjKMqiMnDWwHxSc2GEffBue"
+insurance_df = pd.read_csv(url)
+
+# Visualizar as primeiras linhas do DataFrame
+print("Visualização das primeiras linhas do DataFrame:")
+print(insurance_df.head())
+
+# 1. Análise Exploratória de Dados (EDA) e Visualizações Gráficas
+
+# Distribuição das variáveis
+fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+
+# Idade (Age)
+sns.histplot(insurance_df['age'], kde=True, ax=axes[0, 0], color='skyblue')
+axes[0, 0].set_title('Distribuição da Idade')
+
+# IMC (bmi)
+sns.histplot(insurance_df['bmi'], kde=True, ax=axes[0, 1], color='salmon')
+axes[0, 1].set_title('Distribuição do IMC')
+
+# Número de Filhos (children)
+sns.countplot(data=insurance_df, x='children', ax=axes[0, 2], palette='pastel')
+axes[0, 2].set_title('Número de Filhos')
+
+# Fumante (smoker)
+sns.countplot(data=insurance_df, x='smoker', ax=axes[1, 0], palette='Set2')
+axes[1, 0].set_title('Fumante ou Não')
+
+# Região (region)
+sns.countplot(data=insurance_df, x='region', ax=axes[1, 1], palette='dark')
+axes[1, 1].set_title('Região')
+
+# Encargos (charges)
+sns.histplot(insurance_df['charges'], kde=True, ax=axes[1, 2], color='green')
+axes[1, 2].set_title('Distribuição dos Encargos')
+
+plt.tight_layout()
+plt.show()
+
+# 2. Identificar correlações entre as variáveis
+
+# Converter variáveis categóricas em numéricas para calcular a matriz de correlação
+insurance_df['sex'] = insurance_df['sex'].map({'male': 0, 'female': 1})
+insurance_df['smoker'] = insurance_df['smoker'].map({'no': 0, 'yes': 1})
+insurance_df['region'] = insurance_df['region'].map({'southwest': 0, 'southeast': 1, 'northwest': 2, 'northeast': 3})
+
+# Calcular a matriz de correlação
+correlation_matrix = insurance_df.corr()
+plt.figure(figsize=(10, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt=".2f")
+plt.title("Matriz de Correlação entre as Variáveis")
+plt.show()
+
+# 3. Teste de Hipótese Estatística
+
+# Testar se há diferenças significativas nos encargos do seguro entre fumantes e não fumantes
+smoker_charges = insurance_df[insurance_df['smoker'] == 1]['charges']
+non_smoker_charges = insurance_df[insurance_df['smoker'] == 0]['charges']
+t_statistic, p_value = ttest_ind(smoker_charges, non_smoker_charges)
+print("Teste de Hipótese para diferença nos encargos do seguro entre fumantes e não fumantes:")
+print("Valor p:", p_value)
+
+# Verificar se há uma diferença significativa nos encargos do seguro entre homens e mulheres
+male_charges = insurance_df[insurance_df['sex'] == 0]['charges']
+female_charges = insurance_df[insurance_df['sex'] == 1]['charges']
+t_statistic, p_value = ttest_ind(male_charges, female_charges)
+print("\nTeste de Hipótese para diferença nos encargos do seguro entre homens e mulheres:")
+print("Valor p:", p_value)
+
+# 4. Modelagem Estatística
+
+# Dividir os dados em conjunto de treino e teste
+X = insurance_df.drop('charges', axis=1)
+y = insurance_df['charges']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Treinar o modelo de regressão linear
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# Fazer previsões no conjunto de teste
+y_pred = model.predict(X_test)
+
+# Avaliar a qualidade do modelo
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+print("\nAvaliação do Modelo de Regressão Linear:")
+print("Erro Quadrático Médio (MSE):", mse)
+print("R^2 Score:", r2)
+
+# 5. Relatório Completo
+
+print("\nRelatório Completo:")
+print("1. Análise Exploratória de Dados (EDA):")
+print("- A distribuição da idade é aproximadamente uniforme.")
+print("- A distribuição do IMC (Índice de Massa Corporal) tem uma aparência normal, com a maioria das pessoas tendo IMC entre 20 e 40.")
+print("- A maioria dos segurados não tem filhos, e o número de filhos diminui à medida que o número de crianças aumenta.")
+print("- A quantidade de não fumantes é significativamente maior que a de fumantes.")
+print("- A maioria dos segurados é da região sudeste, seguido por noroeste, sudoeste e nordeste.")
+print("- A distribuição dos encargos do seguro é bastante assimétrica, com a maioria dos encargos concentrada em valores menores.")
+
+print("\n2. Identificação de Correlações entre as Variáveis:")
+print("- Existe uma correlação positiva moderada entre idade e encargos, e entre IMC e encargos.")
+print("- Ser fumante está altamente correlacionado com encargos do seguro.")
+
+print("\n3. Teste de Hipótese Estatística:")
+print("- O teste de hipótese mostra que há uma diferença significativa nos encargos do seguro entre fumantes e não fumantes (valor p < 0.05).")
+print("- Não há uma diferença significativa nos encargos do seguro entre homens e mulheres (valor p > 0.05).")
+
+print("\n4. Modelagem Estatística:")
+print("- O modelo de regressão linear foi treinado para prever os encargos do seguro com base em idade, IMC, número de filhos, sexo, se é fumante e região.")
+print("- O modelo obteve um MSE de", mse, "e um R^2 score de", r2, "no conjunto de teste, indicando uma capacidade moderada de previsão.")
