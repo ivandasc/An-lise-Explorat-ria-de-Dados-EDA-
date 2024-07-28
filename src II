@@ -1,0 +1,92 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from scipy.stats import ttest_ind
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+import io
+import requests
+
+# Carregar o conjunto de dados diretamente do Google Drive
+url = 'https://drive.google.com/uc?export=download&id=1_k6K9o65mXkHz4gEHOmFNsgFmQOA7DfK'
+response = requests.get(url)
+data = pd.read_csv(io.StringIO(response.text))
+
+# Análise Exploratória de Dados (EDA)
+
+# 1.1 Distribuição das variáveis
+# Idade (Age)
+sns.histplot(data["age"], kde=True, color="skyblue")
+plt.title("Distribuição da Idade")
+plt.show()
+
+# IMC (bmi)
+sns.histplot(data["bmi"], kde=True, color="salmon")
+plt.title("Distribuição do IMC")
+plt.show()
+
+# Número de Filhos (children)
+sns.countplot(data=data, x="children", palette="pastel")
+plt.title("Número de Filhos")
+plt.show()
+
+# Fumante (smoker)
+sns.countplot(data=data, x="smoker", palette="Set2")
+plt.title("Fumante ou Não")
+plt.show()
+
+# Região (region)
+sns.countplot(data=data, x="region", palette="dark")
+plt.title("Região")
+plt.show()
+
+# Encargos (charges)
+sns.histplot(data["charges"], kde=True, color="green")
+plt.title("Distribuição dos Encargos do Seguro")
+plt.show()
+
+# 1.2 Relações entre as variáveis
+sns.pairplot(data)
+plt.show()
+
+# 1.3 Matriz de Correlação - Removido devido à presença de variáveis categóricas
+
+# Teste de Hipótese Estatística
+
+# 2.1 Diferenças entre fumantes e não fumantes
+smoker_charges = data[data["smoker"] == "yes"]["charges"]
+non_smoker_charges = data[data["smoker"] == "no"]["charges"]
+
+t_statistic, p_value = ttest_ind(smoker_charges, non_smoker_charges)
+print("Teste t de Student - Fumantes vs Não Fumantes:")
+print(f"Test statistic: {t_statistic}, p-value: {p_value}")
+
+# 2.2 Diferenças entre homens e mulheres
+sns.boxplot(x="sex", y="charges", data=data)
+plt.title("Encargos do Seguro por Sexo")
+plt.show()
+
+# Modelagem Estatística
+
+# 3.1 Preparação dos dados
+X = data[["age", "bmi", "children"]]
+X = pd.get_dummies(X, drop_first=True)
+y = data["charges"]
+
+# 3.2 Divisão dos dados
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# 3.3 Treinamento e Avaliação do Modelo
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+mse = mean_squared_error(y_test, y_pred)
+print("Erro Quadrático Médio:", mse)
+
+coefficients = pd.DataFrame({"feature": X.columns, "coefficient": model.coef_})
+print(coefficients)
+
+print("Intercepto:", model.intercept_)
