@@ -1,0 +1,63 @@
+# Análise e Modelagem de Dados de Seguros de Saúde
+
+## Enunciado
+Você foi contratado por uma empresa de seguros para realizar uma análise abrangente dos dados do seguro de saúde que eles coletaram. O objetivo é extrair insights significativos que possam ajudar a empresa a entender melhor seus clientes e otimizar sua estratégia de preços.
+
+## Problemas a Serem Solucionados
+
+### Análise Exploratória de Dados (EDA)
+- Visualizar a distribuição das variáveis no conjunto de dados.
+- Identificar correlações entre as variáveis.
+- Explorar características como idade, sexo, IMC, número de filhos, fumante e região, e como elas afetam os encargos do seguro.
+
+### Teste de Hipótese Estatística
+- Testar se há diferenças significativas nos encargos do seguro entre fumantes e não fumantes.
+- Verificar se há uma diferença significativa nos encargos do seguro entre homens e mulheres.
+
+### Modelagem Estatística
+- Desenvolver um modelo de regressão linear para prever os encargos do seguro com base nos atributos dos segurados.
+- Avaliar a qualidade do modelo e sua capacidade de generalização.
+
+## Estrutura do Projeto
+
+/src
+
+eda.py # Script para análise exploratória de dados
+hypothesis_testing.py # Script para testes de hipótese
+regression_model.py # Script para desenvolvimento e avaliação do modelo de regressão
+/data
+insurance_data.csv # Dados do seguro de saúde
+/notebooks
+EDA.ipynb # Notebook para análise exploratória de dados
+Hypothesis_Testing.ipynb # Notebook para testes de hipótese
+Regression_Model.ipynb # Notebook para desenvolvimento e avaliação do modelo de regressão
+/docs
+report.md # Relatório detalhado do projeto
+/README.md # Documentação do projeto
+/requirements.txt # Dependências do projeto
+
+
+## Como Usar
+
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/insurance-data-analysis.git
+   cd insurance-data-analysis
+
+2. Instale as dependências:
+!pip install -r requirements.txt
+
+3. Execute a análise exploratória de dados:
+python src/eda.py
+
+4. Execute os testes de hipótese:
+python src/hypothesis_testing.py
+
+5. Desenvolva e avalie o modelo de regressão:
+python src/regression_model.py
+
+### Resultados
+Os resultados da análise e modelagem serão apresentados em forma de gráficos e tabelas, disponíveis nos notebooks na pasta /notebooks e no relatório detalhado em /docs/report.md.
+
+### Conclusões
+As conclusões serão baseadas nos insights obtidos a partir da análise exploratória de dados, dos testes de hipótese estatística e da avaliação do modelo de regressão. O objetivo é fornecer recomendações para a empresa de seguros melhorar sua estratégia de preços e entender melhor o perfil de seus clientes.
